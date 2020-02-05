@@ -29,8 +29,7 @@ fi
 
 model_name=${dataset}_${model}_${model_tag}_${emb_size}emb_seed${seed}${special}
 
-nohup \
-python -u ../train.py \
+python3.6 -u ../train.py \
     -max_src_len 50 \
     -max_conv_len 100 \
     -word_vec_size ${emb_size} \
@@ -53,5 +52,4 @@ python -u ../train.py \
     -dropout 0.1 \
     -learning_rate 0.001 \
     -learning_rate_decay 0.5 \
-    -gpuid 0 \
-    > log/train_${model_name}.log &
+    -gpuid 0
