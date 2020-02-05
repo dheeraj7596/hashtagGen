@@ -260,7 +260,7 @@ class BiAttEncoder(EncoderBase):
 
             # mask padding
             Expand_BF_ans_mask = BF_ans_mask.unsqueeze(1).expand(src_scores.size())  # [batch, src_seq_len, ans_seq_len]
-            src_scores.data.masked_fill_((1 - Expand_BF_ans_mask).byte(), -float('inf'))
+            src_scores.data.masked_fill_(~(Expand_BF_ans_mask).byte(), -float('inf'))
 
             Expand_BF_src_mask = BF_src_mask.unsqueeze(1).expand(ans_scores.size())  # [batch, ans_seq_len, src_seq_len]
             ans_scores.data.masked_fill_((1 - Expand_BF_src_mask).byte(), -float('inf'))
