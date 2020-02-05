@@ -1,4 +1,4 @@
-dataset=Weibo
+dataset=Twitter
 model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
 tw_data_tag=Twitter_src35_conv100_tgt10_v30000
@@ -45,7 +45,7 @@ python -u ../train.py \
     -global_attention general ${copy_cmd} \
     -save_model saved_models/${model_name} \
     -seed ${seed} \
-    -data ../processed_data/${data_tag} \
+    -data /data2/xiuwen/twitter/${data_tag} \
     -batch_size 64 \
     -epochs 15 \
     -optim adam \

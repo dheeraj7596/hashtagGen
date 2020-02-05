@@ -1,5 +1,5 @@
-data_tag='Weibo'
-dataset=../data/${data_tag}
+data_tag='Twitter'
+dataset=/data2/xiuwen/twitter/${data_tag}
 
 
 if [[ $dataset =~ 'Twitter' ]]
