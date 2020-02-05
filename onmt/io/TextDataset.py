@@ -54,6 +54,9 @@ class TextDataset(ONMTDatasetBase):
         # at minimum the src tokens and their indices and potentially also
         # the src and tgt features and alignment information.
         if tgt_examples_iter is not None:
+            print("src_examples_iter", src_examples_iter)
+            print("conversation_examples_iter", conversation_examples_iter)
+            print("tgt_examples_iter", tgt_examples_iter)
             examples_iter = (self._join_dicts(src, conversation, tgt) for src, conversation, tgt in
                              zip(src_examples_iter, conversation_examples_iter, tgt_examples_iter))
         else:
@@ -85,8 +88,8 @@ class TextDataset(ONMTDatasetBase):
 
         def filter_pred(example):
             return 0 < len(example.src) <= src_seq_length \
-                and 0 < len(example.conversation) <= conversation_seq_length \
-                and 0 < len(example.tgt) <= tgt_seq_length
+                   and 0 < len(example.conversation) <= conversation_seq_length \
+                   and 0 < len(example.tgt) <= tgt_seq_length
 
         filter_pred = filter_pred if use_filter_pred else lambda x: True  # do not filter when testing
 
@@ -140,7 +143,7 @@ class TextDataset(ONMTDatasetBase):
         Returns:
             (example_dict iterator, num_feats) tuple.
         """
-        assert side in ['src', 'conversation','tgt']
+        assert side in ['src', 'conversation', 'tgt']
 
         if path is None:
             return (None, 0)
@@ -278,7 +281,7 @@ class TextDataset(ONMTDatasetBase):
         for example in examples_iter:
             src = example["src"]
             conversation = example["conversation"]
-            src_vocab = torchtext.vocab.Vocab(Counter(src+conversation),
+            src_vocab = torchtext.vocab.Vocab(Counter(src + conversation),
                                               specials=[UNK_WORD, PAD_WORD])
             self.src_vocabs.append(src_vocab)
             # Mapping source tokens to indices in the dynamic dict.
