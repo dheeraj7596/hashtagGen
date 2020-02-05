@@ -14,7 +14,7 @@ else
     echo 'the model name should contain dataset name'
 fi
 
-python -u ../evaluate.py \
+python3.6 -u ../evaluate.py \
     -tgt ${data_prefix}/${dataset}/test_tag.txt \
     -pred $1 \
     ${cmd}
