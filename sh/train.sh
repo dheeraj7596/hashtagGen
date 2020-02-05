@@ -45,7 +45,7 @@ python -u ../train.py \
     -global_attention general ${copy_cmd} \
     -save_model saved_models/${model_name} \
     -seed ${seed} \
-    -data /data2/xiuwen/twitter/${data_tag} \
+    -data ../processed_data/${data_tag} \
     -batch_size 64 \
     -epochs 15 \
     -optim adam \
