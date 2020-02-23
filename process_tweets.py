@@ -30,7 +30,7 @@ def handle_tweets(df_tweets):
         for i, str in enumerate(t.split()):
             if str.startswith('#'):
                 segmented_hash = ' '.join(wordninja.split(str))
-                hashes.append(segmented_hash)
+                hashes.append(segmented_hash.lower())
         tweet = tokenizer(t)
         clean_tweets.append(tweet)
         hashtags.append(';'.join(hashes))
