@@ -2,6 +2,7 @@ import pandas as pd
 import re
 from nltk.corpus import stopwords
 import pickle
+import wordninja
 
 stop_words = set()
 stop_words.add("rt")
@@ -28,10 +29,11 @@ def handle_tweets(df_tweets):
         hashes = []
         for i, str in enumerate(t.split()):
             if str.startswith('#'):
-                hashes.append(str)
+                segmented_hash = ' '.join(wordninja.split(str))
+                hashes.append(segmented_hash)
         tweet = tokenizer(t)
         clean_tweets.append(tweet)
-        hashtags.append(hashes)
+        hashtags.append(';'.join(hashes))
         f.write(tweet)
         f.write("\n")
     f.close()
