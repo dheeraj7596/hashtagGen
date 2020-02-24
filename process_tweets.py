@@ -26,12 +26,12 @@ def handle_tweets(df_tweets):
     hashtags = []
     clean_tweets = []
     for t in texts:
-        hashes = []
-        for i, str in enumerate(t.split()):
-            if str.startswith('#'):
-                segmented_hash = ' '.join(wordninja.split(str))
-                hashes.append(segmented_hash.lower())
-        tweet = tokenizer(t)
+        pattern = r'#\S+[ \t\n]|#\S+$'
+        remove = re.compile(pattern)
+        removed_t = remove.sub(r' ', t)
+        matches = re.findall(pattern, t)
+        hashes = [' '.join(wordninja.split(i)).lower() for i in matches]
+        tweet = tokenizer(removed_t)
         clean_tweets.append(tweet)
         hashtags.append(';'.join(hashes))
         f.write(tweet)
@@ -65,3 +65,13 @@ if __name__ == "__main__":
 
     pickle.dump(df_tweets, open(data_path + "df_tweets.pkl", "wb"))
     pickle.dump(df_news, open(data_path + "df_news.pkl", "wb"))
+    # t = "this is a test tweet#sandiego #UnitedStates"
+    # pattern = r'#\S+[ \t\n]|#\S+$'
+    # remove = re.compile(pattern)
+    # removed_t = remove.sub(r' ', t)
+    # matches = re.findall(pattern, t)
+    # hashes = [' '.join(wordninja.split(i)).lower() for i in matches]
+    # print(removed_t)
+    # print(hashes)
+
+
