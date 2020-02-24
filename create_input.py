@@ -45,13 +45,14 @@ if __name__ == "__main__":
         tweet = tweet_phrase_dict[tweet_id]["tweet"]
         clean_tweet = tokenizer(tweet).lower()
         all_tweets.append(clean_tweet)
-        try:
-            news = news_phrase_dict[tweet_news_map[tweet_id]]["news"]
-        except:
-            print(tweet_id, tweet_news_map[tweet_id], len(df_news))
-        clean_news = tokenizer(news).lower()
-        all_news.append(clean_news)
         all_tags.append(df_tweets.iloc[tweet_id]["Hashtags"])
+
+        clean_news_total = ""
+        for news_id in tweet_news_map[tweet_id]:
+            news = news_phrase_dict[news_id]["news"]
+            clean_news = tokenizer(news).lower()
+            clean_news_total = clean_news_total + " " + clean_news
+        all_news.append(clean_news_total)
 
     tweets_train, tweets_test, news_train, news_test, tags_train, tags_test = train_test_split(all_tweets, all_news,
                                                                                                all_tags, test_size=0.1,

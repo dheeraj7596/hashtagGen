@@ -59,7 +59,7 @@ if __name__ == "__main__":
     df_news = df_news.reset_index(drop=True)
 
     clean_tweets, hashtags = handle_tweets(df_tweets)
-    handle_news(df_news)
+    # handle_news(df_news)
     df_tweets["Clean Tweets"] = clean_tweets
     df_tweets["Hashtags"] = hashtags
 
