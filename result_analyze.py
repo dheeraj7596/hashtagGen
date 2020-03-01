@@ -7,10 +7,10 @@ def creat_input_from_matching(df, data_path):
     all_tweets = []
     all_news = []
     all_tags = []
-    for id in df:
-        all_tweets.append(df[id]["processed_tweet"])
-        all_tags.append(df[id]["hashtags"])
-        clean_news_total = ' '.join(df[id]["news"].split(";"))
+    for index, tweet in df.iterrows():
+        all_tweets.append(tweet["processed_tweet"])
+        all_tags.append(tweet["hashtags"])
+        clean_news_total = ' '.join(tweet["news"].split(";"))
         all_news.append(clean_news_total)
 
     tweets_train, tweets_test, news_train, news_test, tags_train, tags_test = train_test_split(all_tweets, all_news,
