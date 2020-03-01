@@ -3,6 +3,8 @@ import re
 from nltk.corpus import stopwords
 import pickle
 import wordninja
+import ekphrasis
+from ekphrasis.classes.segmenter import Segmenter
 
 stop_words = set()
 stop_words.add("rt")
@@ -11,9 +13,9 @@ stop_words.add("RT")
 
 def tokenizer(doc):
     # get letter language
-    x1 = [c.lower() for c in doc.split() if not (re.match('^#|^@', c) or c in stop_words)]
-    # x2 = [re.sub(r'\W+|https?://[a-zA-z./\d]*', '', w) for w in x1]
-    x2 = [re.sub(r'https?://[a-zA-z./\d]*', '', w) for w in x1]
+    x1 = [c.lower() for c in doc.split() if c not in stop_words]
+    x2 = [re.sub(r'\W+|https?://[a-zA-z./\d]*', '', w) for w in x1]
+    # x2 = [re.sub(r'https?://[a-zA-z./\d]*', '', w) for w in x1]
     filtrate = re.compile(u'[^\u0020-\u007F]')  # non-Latin unicode range
     x3 = [filtrate.sub(r'', w) for w in x2]  # remove all non-Latin characters
     context = [c for c in x3 if c and not (re.match('^http', c))]
@@ -21,16 +23,17 @@ def tokenizer(doc):
 
 
 def handle_tweets(df_tweets):
+    seg_eng = Segmenter(corpus="english")
     texts = list(df_tweets["text"])
     f = open(data_path + "abs_tweets.txt", "w")
     hashtags = []
     clean_tweets = []
     for t in texts:
-        pattern = r'#\S+[ \t\n]|#\S+$'
+        pattern = r'#\w+|#\w+$'
         remove = re.compile(pattern)
-        removed_t = remove.sub(r' ', t)
+        removed_t = remove.sub(r'', t)
         matches = re.findall(pattern, t)
-        hashes = [' '.join(wordninja.split(i)).lower() for i in matches]
+        hashes = [seg_eng.segment(i.lstrip('#').lower()) for i in matches]
         tweet = tokenizer(removed_t)
         clean_tweets.append(tweet)
         hashtags.append(';'.join(hashes))
@@ -65,6 +68,7 @@ if __name__ == "__main__":
 
     pickle.dump(df_tweets, open(data_path + "df_tweets.pkl", "wb"))
     pickle.dump(df_news, open(data_path + "df_news.pkl", "wb"))
+
     # t = "this is a test tweet#sandiego #UnitedStates"
     # pattern = r'#\S+[ \t\n]|#\S+$'
     # remove = re.compile(pattern)
@@ -73,5 +77,3 @@ if __name__ == "__main__":
     # hashes = [' '.join(wordninja.split(i)).lower() for i in matches]
     # print(removed_t)
     # print(hashes)
-
-
