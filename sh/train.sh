@@ -1,7 +1,7 @@
 dataset=Twitter
 model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
-tw_data_tag=Twitter_src35_conv1_tgt10_v30000
+tw_data_tag=Twitter_src35_conv100_tgt10_v30000
 is_copyrnn=false
 emb_size=200
 seed=23
