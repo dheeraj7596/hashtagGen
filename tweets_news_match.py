@@ -52,7 +52,7 @@ def match(datapath):
     # ht_in_news = [["raw_tweet", "processed_tweet", "news", "hashtags"]]
     # ht_not_in_news = [["raw_tweet", "processed_tweet", "news", "hashtags"]]
     df_matched_news = pd.DataFrame(columns=["score"])
-    for i, t in enumerate(tokenized_tweets[:10]):
+    for i, t in enumerate(tokenized_tweets):
         if i%500 == 0:
             print("************processed" + str(i) + "**************")
         # doc_scores = bm25.get_scores(t)
