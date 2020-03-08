@@ -1,6 +1,6 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data2/xiuwen/twitter
+data_prefix=/data4/dheeraj/hashtag/notinnews/
 
 if [[ $1 =~ 'Twitter' ]]
 then
@@ -23,7 +23,7 @@ python3.6 -u ../translate.py \
     -max_length 10 \
     -n_best 20 \
     -batch_size 64 \
-    -gpu 0 > log/translate_${1%.pt}.log  \
+    -gpu 7 > log/translate_${1%.pt}.log  \
 && python3.6 -u ../evaluate.py \
     -tgt ${data_prefix}/${dataset}/test_tag.txt \
     -pred prediction/${1/%pt/txt}  \
@@ -38,7 +38,7 @@ python3.6 -u ../translate.py \
     -max_length 10 \
     -n_best 20 \
     -batch_size 64 \
-    -gpu 0 \
+    -gpu 7 \
 && python3.6 -u ../evaluate.py \
     -tgt ${data_prefix}/${dataset}/test_tag.txt \
     -pred prediction/${1/%pt/txt}

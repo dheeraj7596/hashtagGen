@@ -188,7 +188,7 @@ def evaluate_func(opts):
         print('The top_k %d: %.6f acc, %.6f recall, %.6f f measure,  %.6f map' %
               (top_k, acc, recall, f1, np.mean(ap_topk)))
 
-    return
+    #return
 
     # begin to compute rouge
     reference = [[[stemmer.stem(tokens.strip())] for tokens in line.split(';')] for line in target_lines]
