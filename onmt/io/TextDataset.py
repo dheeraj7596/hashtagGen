@@ -281,9 +281,13 @@ class TextDataset(ONMTDatasetBase):
         for example in examples_iter:
             src = example["src"]
             conversation = example["conversation"]
-            src_vocab = torchtext.vocab.Vocab(Counter(src + conversation),
-                                              specials=[UNK_WORD, PAD_WORD])
-            self.src_vocabs.append(src_vocab)
+            try:
+                src_vocab = torchtext.vocab.Vocab(Counter(src + conversation),
+                                                  specials=[UNK_WORD, PAD_WORD])
+                self.src_vocabs.append(src_vocab)
+            except:
+                print(src)
+                print(conversation)
             # Mapping source tokens to indices in the dynamic dict.
             src_map = torch.LongTensor([src_vocab.stoi[w] for w in src])
             example["src_map"] = src_map
