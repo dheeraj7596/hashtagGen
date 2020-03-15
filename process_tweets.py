@@ -20,7 +20,7 @@ def tokenizer(doc):
     filtrate = re.compile(u'[^\u0020-\u007F]')  # non-Latin unicode range
     x3 = [filtrate.sub(r'', w) for w in x2]  # remove all non-Latin characters
     context = [c for c in x3 if c and not (re.match('^http', c))]
-    return context
+    return ' '.join(context)
 
 
 def handle_tweets(df_tweets):
@@ -52,7 +52,7 @@ def handle_news(df_news):
     f.close()
 
 
-def is_in_news(htags, tweet):
+def is_in_tweets(htags, tweet):
     exist = False
     for ht in htags:
         sequence = ht.split()
@@ -78,22 +78,21 @@ if __name__ == "__main__":
 
     clean_tweets, hashtags = handle_tweets(df_tweets)
     # handle_news(df_news)
-    for i in range(len(df_tweets)):
-        if is_in_news(hashtags[i], clean_tweets[i]):
-            ht_in_tweet_idx.append(i)
-        else:
-            ht_not_in_tweet_idx.append(i)
+    # for i in range(len(df_tweets)):
+    #     if is_in_tweets(hashtags[i], clean_tweets[i]):
+    #         ht_in_tweet_idx.append(i)
+    #     else:
+    #         ht_not_in_tweet_idx.append(i)
 
-    clean_tweets = np.array([' '.join(t) for t in clean_tweets])
+    # clean_tweets = np.array([' '.join(t) for t in clean_tweets])
     hashtags = np.array([';'.join(t) for t in hashtags])
     df_tweets["Clean Tweets"] = clean_tweets
     df_tweets["Hashtags"] = hashtags
 
-    df_ht_in_tweets = df_tweets.iloc[ht_in_tweet_idx]
-    df_ht_not_intweets = df_tweets.iloc[ht_not_in_tweet_idx]
+    # df_ht_in_tweets = df_tweets.iloc[ht_in_tweet_idx]
+    # df_ht_not_intweets = df_tweets.iloc[ht_not_in_tweet_idx]
 
-    pickle.dump(df_ht_in_tweets, open(data_path + "df_intweets.pkl", "wb"))
-    pickle.dump(df_ht_not_intweets, open(data_path + "df_notintweets.pkl", "wb"))
+    pickle.dump(df_tweets, open(data_path + "df_tweets.pkl", "wb"))
     pickle.dump(df_news, open(data_path + "df_news.pkl", "wb"))
 
     # t = "this is a test tweet#sandiego #UnitedStates"
