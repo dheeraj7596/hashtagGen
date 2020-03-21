@@ -17,6 +17,7 @@ def creat_input_from_matching(df, data_path):
         if len(df['hashtags'][ind]) == 0 or len(df['processed tweets'][ind]) == 0 or len(df['news'][ind]) == 0:
             drop_index.append(ind)
     df = df.drop(df.index[drop_index])
+
     train = df.sample(frac=0.8, random_state=200)  # random state is a seed value
     valid = df.drop(train.index)
     test = valid.sample(frac=0.5, random_state=200)
@@ -53,11 +54,18 @@ def creat_input_from_matching(df, data_path):
     write_to_file(data_path + "test_tag.txt", test['hashtags'].tolist())
 
 
+def replace_semicolon(file_name):
+    conv = open(file_name, encoding='utf-8').readlines()
+    new_conv = [' '.join(i.rstrip("\n").split(';')) for i in conv]
+    write_to_file(file_name, new_conv)
+
 
 if __name__ == "__main__":
     path = "./data/Twitter/"
     df_news_match = pickle.load(open(path + "news_match.pkl", "rb"))
     creat_input_from_matching(df_news_match, path)
+
+
 
 
 
