@@ -50,7 +50,7 @@ def match(datapath):
         ind = np.argpartition(news_scores, -5)[-5:]
         sorted_ind = ind[np.argsort(np.array(news_scores)[ind])][::-1]
         matched_news = [processed_news[i] for i in sorted_ind]
-        news_string = ';'.join(matched_news)
+        news_string = ' '.join(matched_news)
         top_scores = [news_scores[i] for i in sorted_ind]
         dataset.append([tweets[i], news_string, top_scores, hashtags[i]])
 
