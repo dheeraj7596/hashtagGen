@@ -20,6 +20,6 @@ if __name__ == "__main__":
         clean_line = " ".join(filtered_words)
         if len(clean_line) > 0:
             f.write(clean_line)
-            f.write("\n")
+        f.write("\n")
 
     f.close()
