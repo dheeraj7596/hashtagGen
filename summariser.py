@@ -1,6 +1,9 @@
 import pickle
 from summarizer import Summarizer
 import random
+import flair, torch
+
+flair.device = torch.device('cuda:0')
 
 
 def get_content(news, inds, thresh=5):
