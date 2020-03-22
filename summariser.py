@@ -1,9 +1,6 @@
 import pickle
 from summarizer import Summarizer
 import random
-import flair, torch
-
-flair.device = torch.device('cuda:0')
 
 
 def get_content(news, inds, thresh=5):
@@ -22,6 +19,7 @@ if __name__ == "__main__":
     summarized_contents = []
 
     for i, row in news_match.iterrows():
+        print(i)
         content = get_content(news, row["news_index"], thresh=3)
         summary = model(content, ratio=0.1)
         summarized_contents.append(summary)
