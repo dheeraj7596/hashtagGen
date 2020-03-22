@@ -49,11 +49,9 @@ def func(base_path, type):
 
     for l in lines_post:
         f_post.write(l)
-        f_post.write("\n")
 
     for l in lines_tag:
         f_tag.write(l)
-        f_tag.write("\n")
 
     f_post.close()
     f_conv.close()
