@@ -36,7 +36,7 @@ def match(datapath):
     # processed_news = [' '.join(i) for i in tokenized_news]
     bm25 = BM25Okapi(tokenized_news)
     print("finished loading")
-    dataset = [["processed tweets", "news", "scores", "hashtags"]]
+    dataset = [["processed tweets", "news_index", "scores", "hashtags"]]
     # ht_not_in_news = [["raw_tweet", "processed_tweet", "news", "hashtags"]]
     # df_matched_news = pd.DataFrame(columns=["score"])
     for i, t in enumerate(tokenized_tweets):
@@ -47,12 +47,12 @@ def match(datapath):
         # res = sorted(range(len(doc_scores)), key=lambda sub: doc_scores[sub], reverse=True)[:5]
         # check = bm25.get_top_n(t, processed_news, n=5)
         news_scores = bm25.get_scores(t)
-        ind = np.argpartition(news_scores, -5)[-5:]
+        ind = np.argpartition(news_scores, -20)[-20:]
         sorted_ind = ind[np.argsort(np.array(news_scores)[ind])][::-1]
-        matched_news = [processed_news[i] for i in sorted_ind]
-        news_string = ' '.join(matched_news)
+        # matched_news = [processed_news[i] for i in sorted_ind]
+        # news_string = ' '.join(matched_news)
         top_scores = [news_scores[i] for i in sorted_ind]
-        dataset.append([tweets[i], news_string, top_scores, hashtags[i]])
+        dataset.append([tweets[i], sorted_ind, top_scores, hashtags[i]])
 
     #     hashes = hashtags[i]
     #     raw = raw_tweets[i]
