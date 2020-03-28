@@ -1,5 +1,5 @@
 data_tag='Twitter'
-dataset=/data4/dheeraj/hashtag/innews/${data_tag}
+dataset=/data4/dheeraj/hashtag/notinline/${data_tag}
 
 
 if [[ $dataset =~ 'Twitter' ]]
