@@ -31,7 +31,7 @@ fi
 full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_v${vs}
 
 
-onmt_preprocess -u ../preprocess.py \
+onmt_preprocess \
     -max_shard_size 52428800 \
     -train_src $dataset/train_post.txt \
     -train_tgt $dataset/train_tag.txt \
