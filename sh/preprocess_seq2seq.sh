@@ -32,7 +32,7 @@ full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_v${vs}
 
 
 onmt_preprocess \
-    -max_shard_size 52428800 \
+    -shard_size 52428800 \
     -train_src $dataset/train_post.txt \
     -train_tgt $dataset/train_tag.txt \
     -valid_src $dataset/valid_post.txt \

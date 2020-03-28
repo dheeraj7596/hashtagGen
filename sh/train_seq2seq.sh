@@ -43,12 +43,11 @@ onmt_train \
     -seed ${seed} \
     -data ../processed_data/${data_tag} \
     -batch_size 64 \
-    -train_steps 15 \
+    -train_steps 3000 \
     -optim adam \
     -max_grad_norm 1 \
     -dropout 0.1 \
     -learning_rate 0.001 \
     -learning_rate_decay 0.5 \
-    -world_size 1 \
-    -gpu_ranks 0 \
+    -gpu_ranks 0
     > log/train_${model_name}.log &
