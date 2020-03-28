@@ -50,5 +50,5 @@ onmt_train \
     -learning_rate 0.001 \
     -learning_rate_decay 0.5 \
     -world_size 1 \
-    -gpu_ranks 0
+    -gpu_ranks 0 \
     > log/train_${model_name}.log &
