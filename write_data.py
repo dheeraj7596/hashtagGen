@@ -23,4 +23,5 @@ if __name__ == "__main__":
         tag = final_tags[i]
         with open(base_path + "data/" + str(i) + ".txt", "w") as f:
             f.write(tweet.strip())
+            f.write("\n")
             f.write(tag.strip())

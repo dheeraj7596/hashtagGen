@@ -261,7 +261,8 @@ class BiAttEncoder(EncoderBase):
             # mask padding
             Expand_BF_ans_mask = BF_ans_mask.unsqueeze(1).expand(src_scores.size())  # [batch, src_seq_len, ans_seq_len]
             src_scores.data.masked_fill_(~(Expand_BF_ans_mask).bool(), -float('inf'))
-            src_scores = torch.ones(src_scores.shape).to(ans_seq.device)
+            # UNIFORM ATTENTION
+            # src_scores = torch.ones(src_scores.shape).to(ans_seq.device)
 
             Expand_BF_src_mask = BF_src_mask.unsqueeze(1).expand(ans_scores.size())  # [batch, ans_seq_len, src_seq_len]
             ans_scores.data.masked_fill_(~(Expand_BF_src_mask).bool(), -float('inf'))
