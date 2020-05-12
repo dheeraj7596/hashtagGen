@@ -253,6 +253,10 @@ class TextDataset(ONMTDatasetBase):
             use_vocab=False, tensor_type=torch.LongTensor,
             sequential=False)
 
+        fields["bm25"] = torchtext.data.Field(
+            use_vocab=False, tensor_type=torch.FloatTensor,
+            sequential=False)
+
         return fields
 
     @staticmethod
@@ -406,11 +410,18 @@ class ShardedTextCorpusIterator(object):
         return self.n_feats
 
     def _example_dict_iter(self, line, index):
+        if self.side == "conversation":
+            splitted = line.strip().split("|||||")
+            line = splitted[0]
+            bm25 = float(splitted[1])
         line = line.split()
         if self.line_truncate:
             line = line[:self.line_truncate]
         words, feats, n_feats = TextDataset.extract_text_features(line)
-        example_dict = {self.side: words, "indices": index}
+        if self.side == "conversation":
+            example_dict = {self.side: words, "indices": index, "bm25": bm25}
+        else:
+            example_dict = {self.side: words, "indices": index}
         if feats:
             # All examples must have same number of features.
             aeq(self.n_feats, n_feats)
