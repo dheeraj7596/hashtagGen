@@ -205,7 +205,7 @@ class BiAttEncoder(EncoderBase):
         self.real_hidden_size = hidden_size
         self.no_pack_padded_seq = False
         self.bidirectional = bidirectional
-
+        self.linear_bm25 = nn.Linear(1, 1)
         self.embeddings = embeddings
         input_size_list = [embeddings.embedding_size] + [4 * hidden_size] * (num_layers - 2)
         self.src_rnn_list = nn.ModuleList([getattr(nn, rnn_type)(  # getattr(nn, rnn_type) = torch.nn.modules.rnn.LSTM
@@ -261,20 +261,23 @@ class BiAttEncoder(EncoderBase):
             # mask padding
             Expand_BF_ans_mask = BF_ans_mask.unsqueeze(1).expand(src_scores.size())  # [batch, src_seq_len, ans_seq_len]
             src_scores.data.masked_fill_(~(Expand_BF_ans_mask).bool(), -float('inf'))
-            for i in range(src_scores.size()[0]):
-                src_scores[i] = bm25[i] * src_scores[i]
+            # for i in range(src_scores.size()[0]):
+            #     src_scores[i] = bm25[i] * src_scores[i]
             # UNIFORM ATTENTION
             # src_scores = torch.ones(src_scores.shape).to(ans_seq.device)
 
             Expand_BF_src_mask = BF_src_mask.unsqueeze(1).expand(ans_scores.size())  # [batch, ans_seq_len, src_seq_len]
             ans_scores.data.masked_fill_(~(Expand_BF_src_mask).bool(), -float('inf'))
 
+            bm25_normalized = self.linear_bm25(bm25.view(-1, 1)).view(bm25.size()[0])
+            bias = torch.sigmoid(bm25_normalized)
             # normalize with softmax
             src_alpha = F.softmax(src_scores, dim=2)  # [batch, src_seq_len, ans_seq_len]
             ans_alpha = F.softmax(ans_scores, dim=2)  # [batch, ans_seq_len, src_seq_len]
 
             # take the weighted average
             BF_src_matched_seq = src_alpha.bmm(BF_ans_outputs)  # [batch, src_seq_len, 2*hidden_size]
+            BF_src_matched_seq = bias.view(bias.shape[0], 1, 1).expand(BF_src_matched_seq.shape) * BF_src_matched_seq
             src_matched_seq = BF_src_matched_seq.transpose(0, 1)  # [src_seq_len, batch, 2*hidden_size]
 
             BF_ans_matched_seq = ans_alpha.bmm(BF_src_outputs)  # [batch, ans_seq_len, 2*hidden_size]
