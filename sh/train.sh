@@ -1,11 +1,13 @@
 dataset=Twitter
 model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
-tw_data_tag=Twitter_src35_conv100_tgt10_v30000
+tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_bm25
 is_copyrnn=false
 emb_size=200
 seed=23
-special=''
+special='bm25'
+rnn=300
+lr=0.0008
 
 if [[ $dataset =~ 'Weibo' ]]
 then
@@ -27,7 +29,7 @@ else
 fi
 
 
-model_name=${dataset}_${model}_${model_tag}_${emb_size}emb_seed${seed}${special}
+model_name=${dataset}_${lr}_${rnn}rnn_${emb_size}emb_seed${seed}${special}
 
 nohup \
 python -u ../train.py \
@@ -40,7 +42,7 @@ python -u ../train.py \
     -decoder_type rnn \
     -enc_layers 2  \
     -dec_layers 1 \
-    -rnn_size 300 \
+    -rnn_size ${rnn} \
     -rnn_type GRU \
     -global_attention general ${copy_cmd} \
     -save_model saved_models/${model_name} \
@@ -51,7 +53,7 @@ python -u ../train.py \
     -optim adam \
     -max_grad_norm 1 \
     -dropout 0.1 \
-    -learning_rate 0.001 \
+    -learning_rate ${lr} \
     -learning_rate_decay 0.5 \
     -gpuid 0 \
     > log/train_${model_name}.log &

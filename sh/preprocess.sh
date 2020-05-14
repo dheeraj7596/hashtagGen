@@ -1,5 +1,5 @@
 data_tag='Twitter'
-dataset=/data4/dheeraj/hashtag/innews/${data_tag}
+dataset=/home/xiuwen/hashtagGen/data/Twitter/repeatsample/
 
 
 if [[ $dataset =~ 'Twitter' ]]
@@ -28,17 +28,17 @@ then
     mkdir ../processed_data
 fi
 
-full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_v${vs}
+full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}_bm25
 
 
-python3.6 -u ../preprocess.py \
+python -u ../preprocess.py \
     -max_shard_size 52428800 \
-    -train_src $dataset/train_post.txt \
-    -train_conv $dataset/train_conv.txt \
-    -train_tgt $dataset/train_tag.txt \
-    -valid_src $dataset/valid_post.txt \
-    -valid_conv $dataset/valid_conv.txt \
-    -valid_tgt $dataset/valid_tag.txt \
+    -train_src $dataset/trainnew_post.txt \
+    -train_conv $dataset/trainnew_conv.txt \
+    -train_tgt $dataset/trainnew_tag.txt \
+    -valid_src $dataset/validnew_post.txt \
+    -valid_conv $dataset/validnew_conv.txt \
+    -valid_tgt $dataset/validnew_tag.txt \
     -save_data ../processed_data/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \
