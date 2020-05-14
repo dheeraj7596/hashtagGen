@@ -222,7 +222,7 @@ class BiAttEncoder(EncoderBase):
         self.combine_hidden = nn.Linear(2 * hidden_size, hidden_size, bias=True)
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, src_input, ans_input, lengths=None, hidden=None):
+    def forward(self, src_input, ans_input, bm25, lengths=None, hidden=None):
         """
         a reading comprehension style framework for encoder
         (src->BiRNN->src_outputs, ans->BiRNN->ans_outputs)->(match->src_attn_output, ans_attn_output)
@@ -261,6 +261,8 @@ class BiAttEncoder(EncoderBase):
             # mask padding
             Expand_BF_ans_mask = BF_ans_mask.unsqueeze(1).expand(src_scores.size())  # [batch, src_seq_len, ans_seq_len]
             src_scores.data.masked_fill_(~(Expand_BF_ans_mask).bool(), -float('inf'))
+            for i in range(src_scores.size()[0]):
+                src_scores[i] = bm25[i] * src_scores[i]
             # UNIFORM ATTENTION
             # src_scores = torch.ones(src_scores.shape).to(ans_seq.device)
 
@@ -751,14 +753,14 @@ class TwoEncoderModel(nn.Module):
         self.encoder = encoder
         self.decoder = decoder
 
-    def forward(self, src, conversation, tgt, lengths, max_src_len=None, max_conv_len=None, dec_state=None):
+    def forward(self, src, conversation, tgt, bm25, lengths, max_src_len=None, max_conv_len=None, dec_state=None):
         """Forward propagate a `src` `conversation` and `tgt` pair for training.
         Possible initialized with a beginning decoder state.
         src: [src_len, batch_size, dim]
         """
         tgt = tgt[:-1]  # exclude last target from inputs
 
-        enc_final, memory_bank = self.encoder(src, conversation, lengths)
+        enc_final, memory_bank = self.encoder(src, conversation, bm25, lengths)
         enc_state = \
             self.decoder.init_decoder_state(src, memory_bank, enc_final)
 

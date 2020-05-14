@@ -221,6 +221,7 @@ class Trainer(object):
 
             src = onmt.io.make_features(batch, 'src', self.data_type)
             conversation = onmt.io.make_features(batch, 'conversation', self.data_type)
+            bm25 = batch.bm25
             if self.data_type == 'text':
                 _, src_lengths = batch.src
                 _, conversation_lengths = batch.conversation
@@ -236,7 +237,7 @@ class Trainer(object):
 
             else:
                 outputs, attns, _ = \
-                    self.model(src, conversation, tgt,
+                    self.model(src, conversation, tgt, bm25,
                                (src_lengths, conversation_lengths),
                                max_src_len, max_conv_len)
 
@@ -304,6 +305,7 @@ class Trainer(object):
             dec_state = None
             src = onmt.io.make_features(batch, 'src', self.data_type)
             conversation = onmt.io.make_features(batch, 'conversation', self.data_type)
+            bm25 = batch.bm25
             if self.data_type == 'text':
                 _, src_lengths = batch.src
                 _, conversation_lengths = batch.conversation
@@ -328,7 +330,7 @@ class Trainer(object):
 
                 else:
                     outputs, attns, dec_state = \
-                        self.model(src, conversation, tgt,
+                        self.model(src, conversation, tgt, bm25,
                                    (src_lengths, conversation_lengths),
                                    max_src_len, max_conv_len, dec_state)
 
