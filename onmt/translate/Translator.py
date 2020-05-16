@@ -319,6 +319,7 @@ class Translator(object):
 
         src = onmt.io.make_features(batch, 'src', data_type)
         conversation = onmt.io.make_features(batch, 'conversation', data_type)
+        bm25 = batch.bm25
         src_lengths = None
         conversation_lengths = None
         if data_type == 'text':
@@ -328,7 +329,7 @@ class Translator(object):
         if self.model.__class__.__name__ == "NMTModel":
             enc_states, memory_bank = self.model.encoder(src, src_lengths)
         else:
-            enc_states, memory_bank = self.model.encoder(src, conversation,
+            enc_states, memory_bank = self.model.encoder(src, conversation, bm25,
                                                         (src_lengths, conversation_lengths))
         dec_states = self.model.decoder.init_decoder_state(
             src, memory_bank, enc_states)

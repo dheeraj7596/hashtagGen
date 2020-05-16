@@ -175,14 +175,21 @@ class TextDataset(ONMTDatasetBase):
         """
         with codecs.open(path, "r", "utf-8") as corpus_file:
             for i, line in enumerate(corpus_file):
-                line = line.strip().split()
+                if side == "conversation":
+                    splitted = line.strip().split("|||||")
+                    line = splitted[0].split()
+                    bm25 = float(splitted[1])
+                else:
+                    line = line.strip().split()
                 if truncate:
                     line = line[:truncate]
 
                 words, feats, n_feats = \
                     TextDataset.extract_text_features(line)
-
-                example_dict = {side: words, "indices": i}
+                if side == "conversation":
+                    example_dict = {side: words, "indices": i, "bm25": bm25}
+                else:
+                    example_dict = {side: words, "indices": i}
                 if feats:
                     prefix = side + "_feat_"
                     example_dict.update((prefix + str(j), f)
