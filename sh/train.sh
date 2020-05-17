@@ -1,11 +1,11 @@
 dataset=Twitter
 model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
-tw_data_tag=Twitter_src35_conv100_tgt10_v30000
+tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_raw
 is_copyrnn=false
 emb_size=200
 seed=23
-special=''
+special='raw'
 
 if [[ $dataset =~ 'Weibo' ]]
 then
@@ -51,7 +51,7 @@ python -u ../train.py \
     -optim adam \
     -max_grad_norm 1 \
     -dropout 0.1 \
-    -learning_rate 0.001 \
+    -learning_rate 0.0008 \
     -learning_rate_decay 0.5 \
     -gpuid 0 \
     > log/train_${model_name}.log &
