@@ -404,6 +404,15 @@ def build_vocab(train_dataset_files, fields, data_type, share_vocab,
             fields["src"].vocab = merged_vocab
             fields["conversation"].vocab = merged_vocab
             fields["tgt"].vocab = merged_vocab
+        else:
+            logger.info(" * merging src and conv vocab...")
+            merged = sum(
+                [Counter(dict(fields["src"].vocab.freqs.most_common(src_vocab_size))),
+                 Counter(dict(fields["conversation"].vocab.freqs.most_common(conversation_vocab_size)))], Counter()
+            )
+            merged_vocab = torchtext.vocab.Vocab(merged)
+            fields["src"].vocab = merged_vocab
+            fields["conversation"].vocab = merged_vocab
 
     return fields
 
