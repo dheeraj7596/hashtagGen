@@ -30,8 +30,8 @@ def read_file(file_path):
 
 
 if __name__ == '__main__':
-    key = "train"
-    base_path = "./data/Twitter/backup/"
+    key = "valid"
+    base_path = "./data/Twitter/notinline/"
     src_path = base_path + key + "_post.txt"
     conv_path = base_path + key + "_conv.txt"
     tag_path = base_path + key + "_tag.txt"
