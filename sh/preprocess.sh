@@ -1,44 +1,29 @@
 data_tag='Twitter'
-dataset=/home/xiuwen/hashtagGen/data/Twitter/backup
+dataset=../data/
 
-
-if [[ $dataset =~ 'Twitter' ]]
-then
-    vs=30000
-    sl=35
-    slt=35
-    cl=200
-    clt=100
-    tl=10
-elif [[ $dataset =~ 'Weibo' ]]
-then
-    vs=50000
-    sl=100
-    slt=50
-    cl=200
-    clt=100
-    tl=10
-else
-    echo 'Wrong dataset name!!'
-fi
-
+vs=30000
+sl=35
+slt=35
+cl=200
+clt=100
+tl=10
 
 if [[ ! -e ../processed_data ]]
 then
     mkdir ../processed_data
 fi
 
-full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}_raw
+full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}
 
 
-python -u ../preprocess.py \
+python3.6 -u ../preprocess.py \
     -max_shard_size 52428800 \
-    -train_src $dataset/trainnew_post.txt \
-    -train_conv $dataset/trainnew_conv.txt \
-    -train_tgt $dataset/trainnew_tag.txt \
-    -valid_src $dataset/validnew_post.txt \
-    -valid_conv $dataset/validnew_conv.txt \
-    -valid_tgt $dataset/validnew_tag.txt \
+    -train_src $dataset/train_repeat_post.txt \
+    -train_conv $dataset/train_repeat_conv.txt \
+    -train_tgt $dataset/train_repeat_tag.txt \
+    -valid_src $dataset/valid_repeat_post.txt \
+    -valid_conv $dataset/valid_repeat_conv.txt \
+    -valid_tgt $dataset/valid_repeat_tag.txt \
     -save_data ../processed_data/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \

@@ -1,11 +1,13 @@
 dataset=Twitter
-model=BiAttEncoder  # PostEncoder | BiAttEncoder
+model=PostEncoder # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
-tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_raw
+tw_data_tag=Twitter_src35_conv100_tgt10_vs30000
 is_copyrnn=false
 emb_size=200
 seed=23
-special='raw'
+special=''
+rnn=300
+lr=0.001
 
 if [[ $dataset =~ 'Weibo' ]]
 then
@@ -27,7 +29,7 @@ else
 fi
 
 
-model_name=${dataset}_${model}_${model_tag}_${emb_size}emb_seed${seed}${special}
+model_name=${dataset}_${model}_${emb_size}emb_${rnn}rnn_${lr}lr
 
 nohup \
 python -u ../train.py \
@@ -40,10 +42,10 @@ python -u ../train.py \
     -decoder_type rnn \
     -enc_layers 2  \
     -dec_layers 1 \
-    -rnn_size 300 \
+    -rnn_size ${rnn} \
     -rnn_type GRU \
     -global_attention general ${copy_cmd} \
-    -save_model saved_models/${model_name} \
+    -save_model saved_models/raw/${model_name} \
     -seed ${seed} \
     -data ../processed_data/${data_tag} \
     -batch_size 64 \
@@ -51,7 +53,7 @@ python -u ../train.py \
     -optim adam \
     -max_grad_norm 1 \
     -dropout 0.1 \
-    -learning_rate 0.0008 \
+    -learning_rate ${lr} \
     -learning_rate_decay 0.5 \
-    -gpuid 0 \
+    -gpuid 1 \
     > log/train_${model_name}.log &

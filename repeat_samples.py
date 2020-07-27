@@ -31,7 +31,7 @@ def read_file(file_path):
 
 if __name__ == '__main__':
     key = "valid"
-    base_path = "./data/Twitter/notinline/"
+    base_path = "./data/result/"
     src_path = base_path + key + "_post.txt"
     conv_path = base_path + key + "_conv.txt"
     tag_path = base_path + key + "_tag.txt"
@@ -39,8 +39,8 @@ if __name__ == '__main__':
     convs = read_file(conv_path)
     tags = read_file(tag_path)
     new_data = repeat(srcs, convs, tags)
-    write_to_file(base_path + key + "new_post.txt", new_data[0])
-    write_to_file(base_path + key + "new_conv.txt", new_data[1])
-    write_to_file(base_path + key + "new_tag.txt", new_data[2])
+    write_to_file(base_path + key + "_repeat_post.txt", new_data[0])
+    write_to_file(base_path + key + "_repeat_conv.txt", new_data[1])
+    write_to_file(base_path + key + "_repeat_tag.txt", new_data[2])
 
 
