@@ -1,6 +1,6 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data4/dheeraj/hashtag/notinnews/
+data_prefix=/home/xiuwen/hashtagGen/data/modified/withbm25
 
 if [[ $1 =~ 'Twitter' ]]
 then
@@ -14,31 +14,17 @@ fi
 
 
 nohup \
-python3.6 -u ../translate.py \
-    -model saved_models/$1  \
+python -u ../translate.py \
+    -model saved_models/modifiedbm25/$1  \
     -output prediction/${1/%pt/txt} \
-    -src ${data_prefix}/${dataset}/test_post.txt \
-    -conversation ${data_prefix}/${dataset}/test_conv.txt \
+    -src ${data_prefix}/test_post.txt \
+    -conversation ${data_prefix}/test_conv.txt \
     -beam_size 30 \
     -max_length 10 \
     -n_best 20 \
     -batch_size 64 \
-    -gpu 7 > log/translate_${1%.pt}.log  \
-&& python3.6 -u ../evaluate.py \
-    -tgt ${data_prefix}/${dataset}/test_tag.txt \
+    -gpu 4 > log/translate_${1%.pt}.log  \
+&& python -u ../evaluate.py \
+    -tgt ${data_prefix}/test_tag.txt \
     -pred prediction/${1/%pt/txt}  \
     >> log/translate_${1%.pt}.log &
-
-python3.6 -u ../translate.py \
-    -model saved_models/$1  \
-    -output prediction/${1/%pt/txt} \
-    -src ${data_prefix}/${dataset}/test_post.txt \
-    -conversation ${data_prefix}/${dataset}/test_conv.txt \
-    -beam_size 30 \
-    -max_length 10 \
-    -n_best 20 \
-    -batch_size 64 \
-    -gpu 7 \
-&& python3.6 -u ../evaluate.py \
-    -tgt ${data_prefix}/${dataset}/test_tag.txt \
-    -pred prediction/${1/%pt/txt}
