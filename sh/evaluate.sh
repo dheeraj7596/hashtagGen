@@ -1,6 +1,6 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data2/xiuwen/twitter
+data_prefix=/home/xiuwen/hashtagGen/data/modified/withbm25
 
 if [[ $1 =~ 'Twitter' ]]
 then
@@ -14,7 +14,7 @@ else
     echo 'the model name should contain dataset name'
 fi
 
-python3.6 -u ../evaluate.py \
-    -tgt ${data_prefix}/${dataset}/test_tag.txt \
-    -pred $1 \
-    ${cmd}
+python -u ../evaluate.py \
+    -tgt ${data_prefix}/test_tag.txt \
+    -pred prediction/${1/%pt/txt}  \
+    >> log/translate_${1%.pt}.log &
