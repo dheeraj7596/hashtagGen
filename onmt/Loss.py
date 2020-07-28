@@ -187,7 +187,7 @@ class NMTLossCompute(LossComputeBase):
     def _compute_loss(self, batch, output, target):
         scores = self.generator(self._bottle(output))
 
-        gtruth = target.view(-1)
+        gtruth = target.contiguous().view(-1)
         if self.confidence < 1:
             tdata = gtruth.data
             mask = torch.nonzero(tdata.eq(self.padding_idx)).squeeze()
