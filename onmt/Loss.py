@@ -206,7 +206,7 @@ class NMTLossCompute(LossComputeBase):
         else:
             loss_data = loss.data.clone()
 
-        stats = self._stats(loss_data, scores.data, target.view(-1).data)
+        stats = self._stats(loss_data, scores.data, target.contiguous().view(-1).data)
 
         return loss, stats
 
