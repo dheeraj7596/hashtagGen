@@ -1,29 +1,43 @@
 data_tag='Twitter'
-dataset=../data/
+dataset=/home/xiuwen/hashtagGen/data/modified/withoutbm25/
 
-vs=30000
-sl=35
-slt=35
-cl=200
-clt=100
-tl=10
+if [[ $data_tag =~ 'Twitter' ]]
+then
+    vs=30000
+    sl=35
+    slt=35
+    cl=200
+    clt=100
+    tl=10
+elif [[ $data_tag =~ 'Weibo' ]]
+then
+    vs=50000
+    sl=100
+    slt=50
+    cl=200
+    clt=100
+    tl=10
+else
+    echo 'Wrong dataset name!!'
+fi
+
 
 if [[ ! -e ../processed_data ]]
 then
     mkdir ../processed_data
 fi
 
-full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}
+full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}_withoutbm25_notshare
 
 
-python3.6 -u ../preprocess.py \
+python -u ../preprocess.py \
     -max_shard_size 52428800 \
-    -train_src $dataset/train_repeat_post.txt \
-    -train_conv $dataset/train_repeat_conv.txt \
-    -train_tgt $dataset/train_repeat_tag.txt \
-    -valid_src $dataset/valid_repeat_post.txt \
-    -valid_conv $dataset/valid_repeat_conv.txt \
-    -valid_tgt $dataset/valid_repeat_tag.txt \
+    -train_src $dataset/trainrepeat_post.txt \
+    -train_conv $dataset/trainrepeat_conv.txt \
+    -train_tgt $dataset/trainrepeat_tag.txt \
+    -valid_src $dataset/validrepeat_post.txt \
+    -valid_conv $dataset/validrepeat_conv.txt \
+    -valid_tgt $dataset/validrepeat_tag.txt \
     -save_data ../processed_data/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \
@@ -32,6 +46,3 @@ python3.6 -u ../preprocess.py \
     -src_seq_length_trunc ${slt} \
     -conversation_seq_length_trunc ${clt} \
     -dynamic_dict \
-    -share_vocab
-
-

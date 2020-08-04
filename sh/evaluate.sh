@@ -1,6 +1,6 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data2/xiuwen/twitter
+data_prefix=/home/xiuwen/hashtagGen/data/modified/withoutbm25
 
 if [[ $1 =~ 'Twitter' ]]
 then
@@ -15,6 +15,6 @@ else
 fi
 
 python3.6 -u ../evaluate.py \
-    -tgt ${data_prefix}/${dataset}/test_tag.txt \
-    -pred $1 \
+    -tgt ${data_prefix}/test_tag.txt \
+    -pred ./prediction/$1 \
     ${cmd}
