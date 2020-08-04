@@ -160,6 +160,7 @@ def evaluate_func(opts):
     for pred, tgt in zip(preds_lines, target_lines):
         preds = pred.split(';')
         tgts = tgt.split(';')
+        preds = [t for t in preds if '<unk>' not in t and len(t)!=0]
         preds = [stemmer.stem(t.strip()) for t in preds if t.strip()]
         tgts = [stemmer.stem(t.strip()) for t in tgts if t.strip()]
         gold_cnt += len(tgts)
