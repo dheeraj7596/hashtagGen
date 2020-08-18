@@ -242,7 +242,7 @@ class TextDataset(ONMTDatasetBase):
             return alignment
 
         fields["src_map"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.FloatTensor,
+            use_vocab=False, tensor_type=torch.FloatTensor,
             postprocessing=make_src, sequential=False)
 
         def make_tgt(data, vocab, is_train):
@@ -253,15 +253,15 @@ class TextDataset(ONMTDatasetBase):
             return alignment
 
         fields["alignment"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.LongTensor,
+            use_vocab=False, tensor_type=torch.LongTensor,
             postprocessing=make_tgt, sequential=False)
 
         fields["indices"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.LongTensor,
+            use_vocab=False, tensor_type=torch.LongTensor,
             sequential=False)
 
         fields["bm25"] = torchtext.data.Field(
-            use_vocab=False, dtype=torch.FloatTensor,
+            use_vocab=False, tensor_type=torch.FloatTensor,
             sequential=False)
 
         return fields
@@ -428,23 +428,27 @@ class ShardedTextCorpusIterator(object):
         return self.n_feats
 
     def _example_dict_iter(self, line, index, score=None):
+        line = line.rstrip("\n").split(" ")
+
         if score:
             splitted = score.strip().split(",")
             bm25 = [float(i) for i in splitted]
-        line = line.rstrip("\n").split(" ")
         if self.line_truncate:
             line = line[:self.line_truncate]
-        words, feats, n_feats = TextDataset.extract_text_features(line)
+            if score:
+                bm25 = bm25[:self.line_truncate]
+        # words, feats, n_feats = TextDataset.extract_text_features(line)
         if score:
-            example_dict = {self.side: words, "indices": index, "bm25": bm25}
+            assert len(line) == len(bm25)
+            example_dict = {self.side: line, "indices": index, "bm25": torch.FloatTensor(bm25)}
         else:
-            example_dict = {self.side: words, "indices": index}
-        if feats:
-            # All examples must have same number of features.
-            aeq(self.n_feats, n_feats)
-
-            prefix = self.side + "_feat_"
-            example_dict.update((prefix + str(j), f)
-                                for j, f in enumerate(feats))
+            example_dict = {self.side: line, "indices": index}
+        # if feats:
+        #     # All examples must have same number of features.
+        #     aeq(self.n_feats, n_feats)
+        #
+        #     prefix = self.side + "_feat_"
+        #     example_dict.update((prefix + str(j), f)
+        #                         for j, f in enumerate(feats))
 
         return example_dict
