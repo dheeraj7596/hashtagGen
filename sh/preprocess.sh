@@ -1,5 +1,5 @@
 data_tag='Twitter'
-dataset=/home/xiuwen/hashtagGen/data/modified/withbm25/
+dataset=/data1/xiuwen/twitter/match-using-words/tweet-conv-8days-no-time-usingwords/news/
 
 if [[ $data_tag =~ 'Twitter' ]]
 then
@@ -27,18 +27,18 @@ then
     mkdir ../processed_data
 fi
 
-full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}_modifiedbm25_notshare
+full_data_tag=${data_tag}_src${slt}_conv${clt}_tgt${tl}_vs${vs}_notshare
 
 
 python -u ../preprocess.py \
     -max_shard_size 52428800 \
-    -train_src $dataset/trainrepeat_post.txt \
-    -train_conv $dataset/trainrepeat_conv.txt \
-    -train_tgt $dataset/trainrepeat_tag.txt \
-    -valid_src $dataset/validrepeat_post.txt \
-    -valid_conv $dataset/validrepeat_conv.txt \
-    -valid_tgt $dataset/validrepeat_tag.txt \
-    -save_data ../processed_data/${full_data_tag}  \
+    -train_src $dataset/train_repeat_post.txt \
+    -train_conv $dataset/train_repeat_conv.txt \
+    -train_tgt $dataset/train_repeat_tag.txt \
+    -valid_src $dataset/valid_repeat_post.txt \
+    -valid_conv $dataset/valid_repeat_conv.txt \
+    -valid_tgt $dataset/valid_repeat_tag.txt \
+    -save_data ../processed_data/match-using-word/news/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \
     -conversation_seq_length ${cl} \

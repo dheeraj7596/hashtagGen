@@ -1,20 +1,7 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/home/xiuwen/hashtagGen/data/modified/withbm25
-
-if [[ $1 =~ 'Twitter' ]]
-then
-    dataset=${tw_dataset}
-    cmd='-filter_chinese 0'
-elif [[ $1 =~ 'Weibo' ]]
-then
-    dataset=${wb_dataset}
-    cmd=''
-else
-    echo 'the model name should contain dataset name'
-fi
 
 python -u ../evaluate.py \
-    -tgt ${data_prefix}/test_tag.txt \
-    -pred prediction/${1/%pt/txt}  \
-    >> log/translate_${1%.pt}.log &
+    -tgt  /home/xiuwen/hashtagGen/data/modified/withoutbm25/test_tag.txt \
+    -pred ./prediction/Twitter_BiAttEncoder_0.001_300rnn_200emb_seed23bm25_notshare_acc_52.82_ppl_30.91_e10.txt \
+    >> log/translate_newcode.log &
