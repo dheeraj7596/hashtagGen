@@ -1,6 +1,7 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/home/xiuwen/hashtagGen/data/modified/withoutbm25
+data_prefix=/data1/xiuwen/twitter/match-using-words/tweet-conv-8days-no-time-usingwords/news/
+path=match-using-words
 
 if [[ $1 =~ 'Twitter' ]]
 then
@@ -16,5 +17,5 @@ fi
 
 python3.6 -u ../evaluate.py \
     -tgt ${data_prefix}/test_tag.txt \
-    -pred ./prediction/$1 \
+    -pred ./prediction/${path}/$1 \
     ${cmd}
