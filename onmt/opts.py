@@ -131,13 +131,17 @@ def preprocess_opts(parser):
                        help="Path to the training source data")
     group.add_argument('-train_conv', required=True,
                        help="Path to the training conversation data")  # yue
+    group.add_argument('-train_score',
+                       help="Path to the training conversation score")   # xiuwen
     group.add_argument('-train_tgt', required=True,
                        help="Path to the training target data")
-    group.add_argument('-valid_src', required=True,
+    group.add_argument('-valid_src',
                        help="Path to the validation source data")
-    group.add_argument('-valid_conv', required=True,
+    group.add_argument('-valid_conv',
                        help="Path to the validation conversation data")  # yue
-    group.add_argument('-valid_tgt', required=True,
+    group.add_argument('-valid_score',
+                       help="Path to the validation conversation score")   # xiuwen
+    group.add_argument('-valid_tgt',
                        help="Path to the validation target data")
 
     group.add_argument('-src_dir', default="",

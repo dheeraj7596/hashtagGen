@@ -39,7 +39,7 @@ def parse_args():
     return opt
 
 
-def build_save_text_dataset_in_shards(src_corpus, conversation_corpus, tgt_corpus, fields,
+def build_save_text_dataset_in_shards(src_corpus, conversation_corpus, tgt_corpus, score_corpus, fields,
                                       corpus_type, opt, logger=None):
     '''
     Divide the big corpus into shards, and build dataset separately.
@@ -88,7 +88,7 @@ def build_save_text_dataset_in_shards(src_corpus, conversation_corpus, tgt_corpu
     conversation_iter = onmt.io.ShardedTextCorpusIterator(
         conversation_corpus, opt.conversation_seq_length_trunc,
         "conversation", opt.max_shard_size,
-        assoc_iter=src_iter)
+        assoc_iter=src_iter, score_path=score_corpus)
     tgt_iter = onmt.io.ShardedTextCorpusIterator(
         tgt_corpus, opt.tgt_seq_length_trunc,
         "tgt", opt.max_shard_size,
@@ -126,16 +126,18 @@ def build_save_dataset(corpus_type, fields, opt, logger=None):
     if corpus_type == 'train':
         src_corpus = opt.train_src
         conversation_corpus = opt.train_conv
+        score_corpus = opt.train_score
         tgt_corpus = opt.train_tgt
     else:
         src_corpus = opt.valid_src
         conversation_corpus = opt.valid_conv
+        score_corpus = opt.valid_score
         tgt_corpus = opt.valid_tgt
 
     # Currently we only do preprocess sharding for corpus: data_type=='text'.
     if opt.data_type == 'text':
         return build_save_text_dataset_in_shards(
-            src_corpus, conversation_corpus, tgt_corpus, fields,
+            src_corpus, conversation_corpus, tgt_corpus, score_corpus, fields,
             corpus_type, opt)
 
     # For data_type == 'img' or 'audio', currently we don't do

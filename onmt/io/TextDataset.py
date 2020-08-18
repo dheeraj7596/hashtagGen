@@ -242,7 +242,7 @@ class TextDataset(ONMTDatasetBase):
             return alignment
 
         fields["src_map"] = torchtext.data.Field(
-            use_vocab=False, tensor_type=torch.FloatTensor,
+            use_vocab=False, dtype=torch.FloatTensor,
             postprocessing=make_src, sequential=False)
 
         def make_tgt(data, vocab, is_train):
@@ -253,15 +253,15 @@ class TextDataset(ONMTDatasetBase):
             return alignment
 
         fields["alignment"] = torchtext.data.Field(
-            use_vocab=False, tensor_type=torch.LongTensor,
+            use_vocab=False, dtype=torch.LongTensor,
             postprocessing=make_tgt, sequential=False)
 
         fields["indices"] = torchtext.data.Field(
-            use_vocab=False, tensor_type=torch.LongTensor,
+            use_vocab=False, dtype=torch.LongTensor,
             sequential=False)
 
         fields["bm25"] = torchtext.data.Field(
-            use_vocab=False, tensor_type=torch.FloatTensor,
+            use_vocab=False, dtype=torch.FloatTensor,
             sequential=False)
 
         return fields
@@ -322,7 +322,7 @@ class ShardedTextCorpusIterator(object):
     """
 
     def __init__(self, corpus_path, line_truncate, side, shard_size,
-                 assoc_iter=None):
+                 assoc_iter=None, score_path=None):
         """
         Args:
             corpus_path: the corpus file path.
@@ -333,10 +333,14 @@ class ShardedTextCorpusIterator(object):
             assoc_iter: if not None, it is the associate iterator that
                         this iterator should align its step with.
         """
+        self.use_score = False
         try:
             # The codecs module seems to have bugs with seek()/tell(),
             # so we use io.open().
             self.corpus = io.open(corpus_path, "r", encoding="utf-8")
+            if (score_path):
+                self.use_score = True
+                self.score = io.open(score_path, "r", encoding="utf-8")
         except IOError:
             sys.stderr.write("Failed to open corpus file: %s" % corpus_path)
             sys.exit(1)
@@ -367,7 +371,10 @@ class ShardedTextCorpusIterator(object):
 
                 self.line_index += 1
                 iteration_index += 1
-                yield self._example_dict_iter(line, iteration_index)
+                if self.use_score:
+                    yield self._example_dict_iter(line, iteration_index, score=self.score.readline())
+                else:
+                    yield self._example_dict_iter(line, iteration_index)
 
             if self.assoc_iter.eof:
                 self.eof = True
@@ -388,6 +395,7 @@ class ShardedTextCorpusIterator(object):
                         raise StopIteration
 
                 line = self.corpus.readline()
+
                 if line == '':
                     self.eof = True
                     self.corpus.close()
@@ -396,7 +404,10 @@ class ShardedTextCorpusIterator(object):
 
                 self.line_index += 1
                 iteration_index += 1
-                yield self._example_dict_iter(line, iteration_index)
+                if self.use_score:
+                    yield self._example_dict_iter(line, iteration_index, score=self.score.readline())
+                else:
+                    yield self._example_dict_iter(line, iteration_index)
 
     def hit_end(self):
         return self.eof
@@ -416,16 +427,15 @@ class ShardedTextCorpusIterator(object):
 
         return self.n_feats
 
-    def _example_dict_iter(self, line, index):
-        if self.side == "conversation":
-            splitted = line.strip().split("|||||")
-            line = splitted[0]
-            bm25 = float(splitted[1])
-        line = line.split()
+    def _example_dict_iter(self, line, index, score=None):
+        if score:
+            splitted = score.strip().split(",")
+            bm25 = [float(i) for i in splitted]
+        line = line.rstrip("\n").split(" ")
         if self.line_truncate:
             line = line[:self.line_truncate]
         words, feats, n_feats = TextDataset.extract_text_features(line)
-        if self.side == "conversation":
+        if score:
             example_dict = {self.side: words, "indices": index, "bm25": bm25}
         else:
             example_dict = {self.side: words, "indices": index}
