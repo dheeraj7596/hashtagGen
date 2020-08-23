@@ -2,25 +2,43 @@ import pandas as pd
 import re
 from nltk.corpus import stopwords
 import pickle
-import wordninja
 import ekphrasis
 import numpy as np
 from ekphrasis.classes.segmenter import Segmenter
 
+
 stop_words = set()
 stop_words.add("rt")
 stop_words.add("RT")
+seg_eng = Segmenter(corpus="english")
 
 
 def tokenizer(doc):
     # get letter language
-    x1 = [c.lower() for c in doc.split() if c not in stop_words]
-    x2 = [re.sub(r'\W+|https?://[a-zA-z./\d]*', '', w) for w in x1]
+    x1 = [c for c in doc.split() if c not in stop_words]
+    x2 = []
+    for i in x1:
+        if not i.startswith("@"):
+            x2.append(i.lower())
+        else:
+            x2.extend(seg_eng.segment(i.lstrip('@')).split())
+    x3 = [re.sub(r'\W+|https?://[a-zA-z./\d]*', '', w) for w in x2]
     # x2 = [re.sub(r'https?://[a-zA-z./\d]*', '', w) for w in x1]
     filtrate = re.compile(u'[^\u0020-\u007F]')  # non-Latin unicode range
-    x3 = [filtrate.sub(r'', w) for w in x2]  # remove all non-Latin characters
-    context = [c for c in x3 if c and not (re.match('^http', c))]
+    x4 = [filtrate.sub(r'', w) for w in x3]  # remove all non-Latin characters
+    context = [c for c in x4 if c and not (re.match('^http', c))]
     return ' '.join(context)
+
+
+def ner(doc):
+   x = doc.split(' ')
+   x2 = []
+   for i in x:
+      if not i.startswith("@"):
+          x2.append(i)
+      else:
+          x2.extend(seg_eng.segment(i.lstrip('@')).split())
+   return ' '.join(x2)
 
 
 def handle_tweets(df_tweets):
