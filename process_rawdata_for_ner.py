@@ -76,7 +76,7 @@ def handle_tweets(df_tweets):
         # removed_t = remove.sub(r'', t)
         # matches = re.findall(pattern, t)
         tweet = row['text']
-        tweet = re.sub(r'\s+', ' ', tweet)
+        tweet = re.sub(r'\s+', ' ', str(tweet))
         list_tweet = tweet.split(" ")
         temp = get_inline_notinline_htags(list_tweet)
         if temp is not None:
@@ -89,13 +89,13 @@ def handle_tweets(df_tweets):
     return dataset
 
 if __name__ == '__main__':
-    data_path = "C:/Users/xw/Documents/Twitter-analysis/data/"
-    df_tweets = pd.read_csv(data_path + "tweets.csv", encoding="utf-8", error_bad_lines=False)
+    data_path = "/home/xiuwen/tweetAnalyze/data/tweet_2020/"
+    df_tweets = pd.read_csv(data_path + "tweet_2020.csv", encoding="utf-8", error_bad_lines=False)
     print(len(df_tweets))
     dataset = handle_tweets(df_tweets)
     df_processed_tweets = pd.DataFrame(dataset[1:], columns=dataset[0])
     df_processed_tweets['id'] = df_processed_tweets.index
-    df_processed_tweets.to_pickle(data_path + "processedtweets.pkl")
+    df_processed_tweets.to_pickle(data_path + "tweets.pkl")
     print(len(dataset))
 
 
