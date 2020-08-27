@@ -254,8 +254,11 @@ class BiAttEncoder(EncoderBase):
             BF_src_outputs = src_seq.transpose(0, 1)  # [batch, src_seq_len, 2*hidden_size]
             BF_ans_outputs = ans_seq.transpose(0, 1)  # [batch, ans_seq_len, 2*hidden_size]
 
+
             # compute bi-att scores
             src_scores = BF_src_outputs.bmm(BF_ans_outputs.transpose(2, 1))  # [batch, src_seq_len, ans_seq_len]
+            src_scores = bm25.view(bm25.shape[0], 1, -1).expand(src_scores.shape) * src_scores
+
             ans_scores = BF_ans_outputs.bmm(BF_src_outputs.transpose(2, 1))  # [batch, ans_seq_len, src_seq_len]
 
             # mask padding
@@ -269,15 +272,13 @@ class BiAttEncoder(EncoderBase):
             Expand_BF_src_mask = BF_src_mask.unsqueeze(1).expand(ans_scores.size())  # [batch, ans_seq_len, src_seq_len]
             ans_scores.data.masked_fill_(~(Expand_BF_src_mask).bool(), -float('inf'))
 
-            bm25_normalized = self.linear_bm25(bm25.view(-1, 1)).view(bm25.size()[0])
-            bias = torch.sigmoid(bm25_normalized)
+
             # normalize with softmax
-            src_alpha = F.softmax(src_scores, dim=2)  # [batch, src_seq_len, ans_seq_len]
+            src_alpha = F.softmax(src_scores, dim=2)  # [batch, src_seq_len, ans_seq_len]  news2src
             ans_alpha = F.softmax(ans_scores, dim=2)  # [batch, ans_seq_len, src_seq_len]
 
             # take the weighted average
             BF_src_matched_seq = src_alpha.bmm(BF_ans_outputs)  # [batch, src_seq_len, 2*hidden_size]
-            BF_src_matched_seq = bias.view(bias.shape[0], 1, 1).expand(BF_src_matched_seq.shape) * BF_src_matched_seq
             src_matched_seq = BF_src_matched_seq.transpose(0, 1)  # [src_seq_len, batch, 2*hidden_size]
 
             BF_ans_matched_seq = ans_alpha.bmm(BF_src_outputs)  # [batch, ans_seq_len, 2*hidden_size]

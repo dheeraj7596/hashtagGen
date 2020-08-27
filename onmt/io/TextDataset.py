@@ -241,6 +241,14 @@ class TextDataset(ONMTDatasetBase):
                     alignment[j, i, t] = 1
             return alignment
 
+        def create_score(data, vocab, is_train):
+            size = max([t.size(0) for t in data])
+            new_score = torch.zeros(len(data), size)
+            for i, score in enumerate(data):
+                for j, t in enumerate(score):
+                    new_score[i, j] = t
+            return new_score
+
         fields["src_map"] = torchtext.data.Field(
             use_vocab=False, tensor_type=torch.FloatTensor,
             postprocessing=make_src, sequential=False)
@@ -262,7 +270,7 @@ class TextDataset(ONMTDatasetBase):
 
         fields["bm25"] = torchtext.data.Field(
             use_vocab=False, tensor_type=torch.FloatTensor,
-            sequential=False)
+            postprocessing=create_score, sequential=False)
 
         return fields
 
