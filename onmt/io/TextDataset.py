@@ -297,8 +297,9 @@ class TextDataset(ONMTDatasetBase):
                                                   specials=[UNK_WORD, PAD_WORD])
                 self.src_vocabs.append(src_vocab)
             except:
-                print(src)
-                print(conversation)
+                src_vocab = torchtext.vocab.Vocab(Counter(src),
+                                                  specials=[UNK_WORD, PAD_WORD])
+                self.src_vocabs.append(src_vocab)
             # Mapping source tokens to indices in the dynamic dict.
             src_map = torch.LongTensor([src_vocab.stoi[w] for w in src])
             example["src_map"] = src_map
@@ -427,9 +428,17 @@ class ShardedTextCorpusIterator(object):
 
         return self.n_feats
 
+    # def pad_bm25(self, bm25):
+    #     max_len = max(len(x) for x in bm25)
+    #     padded = []
+    #     for i in bm25:
+    #         temp = i + [0] * (max_len - len(i))
+    #         padded.append(temp)
+    #     return padded
+
+
     def _example_dict_iter(self, line, index, score=None):
         line = line.rstrip("\n").split(" ")
-
         if score:
             splitted = score.strip().split(",")
             bm25 = [float(i) for i in splitted]
@@ -440,6 +449,7 @@ class ShardedTextCorpusIterator(object):
         # words, feats, n_feats = TextDataset.extract_text_features(line)
         if score:
             assert len(line) == len(bm25)
+            # bm25 = self.pad_bm25(bm25)
             example_dict = {self.side: line, "indices": index, "bm25": torch.FloatTensor(bm25)}
         else:
             example_dict = {self.side: line, "indices": index}
