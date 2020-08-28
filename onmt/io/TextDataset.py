@@ -133,7 +133,7 @@ class TextDataset(ONMTDatasetBase):
         return scores
 
     @staticmethod
-    def make_text_examples_nfeats_tpl(path, truncate, side):
+    def make_text_examples_nfeats_tpl(path, truncate, side, score_path=None):
         """
         Args:
             path (str): location of a src or tgt file.
@@ -151,7 +151,7 @@ class TextDataset(ONMTDatasetBase):
         # All examples have same number of features, so we peek first one
         # to get the num_feats.
         examples_nfeats_iter = \
-            TextDataset.read_text_file(path, truncate, side)
+            TextDataset.read_text_file(path, truncate, side, score=score_path)
 
         first_ex = next(examples_nfeats_iter)
         num_feats = first_ex[1]
@@ -163,7 +163,7 @@ class TextDataset(ONMTDatasetBase):
         return (examples_iter, num_feats)
 
     @staticmethod
-    def read_text_file(path, truncate, side):
+    def read_text_file(path, truncate, side, score=None):
         """
         Args:
             path (str): location of a src or tgt file.
@@ -173,23 +173,38 @@ class TextDataset(ONMTDatasetBase):
         Yields:
             (word, features, nfeat) triples for each line.
         """
-        with codecs.open(path, "r", "utf-8") as corpus_file:
-            for i, line in enumerate(corpus_file):
-                if side == "conversation":
-                    splitted = line.strip().split("|||||")
-                    line = splitted[0].split()
-                    bm25 = float(splitted[1])
-                else:
-                    line = line.strip().split()
+
+        corpus_file = codecs.open(path, "r", "utf-8")
+        if score:
+            score_file = codecs.open(score, "r", "utf-8")
+            for i, data in enumerate(zip(corpus_file, score_file)):
+                line = data[0]
+                score = data[1]
+                line = line.rstrip("\n").split(" ")
+                splitted = score.strip().split(",")
+                bm25 = [float(i) for i in splitted]
                 if truncate:
                     line = line[:truncate]
-
+                    bm25 = bm25[:truncate]
+                # words, feats, n_feats = TextDataset.extract_text_features(line)
+                assert len(line) == len(bm25)
                 words, feats, n_feats = \
                     TextDataset.extract_text_features(line)
-                if side == "conversation":
-                    example_dict = {side: words, "indices": i, "bm25": bm25}
-                else:
-                    example_dict = {side: words, "indices": i}
+                example_dict = {side: words, "indices": i, "bm25": torch.FloatTensor(bm25)}
+                if feats:
+                    prefix = side + "_feat_"
+                    example_dict.update((prefix + str(j), f)
+                                        for j, f in enumerate(feats))
+                yield example_dict, n_feats
+
+        else:
+            for i, line in enumerate(corpus_file):
+                line = line.rstrip("\n").split(" ")
+                if truncate:
+                    line = line[:truncate]
+                words, feats, n_feats = \
+                    TextDataset.extract_text_features(line)
+                example_dict = {side: words, "indices": i}
                 if feats:
                     prefix = side + "_feat_"
                     example_dict.update((prefix + str(j), f)
