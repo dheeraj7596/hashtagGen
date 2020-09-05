@@ -1,10 +1,10 @@
 dataset=Twitter
-model=PostEncoder  # PostEncoder | BiAttEncoder
+model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
 tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_nonshare
-path=match-using-entity/modifiedbm25
+path=match-using-entity/considertime/
 is_copyrnn=false
-emb_size=200
+emb_size=300
 seed=23
 special='raw_news'
 rnn=300
@@ -55,7 +55,7 @@ python -u ../train.py \
     -dropout 0.1 \
     -learning_rate ${lr} \
     -learning_rate_decay 0.5 \
-    -gpuid 3 \
+    -gpuid 1 \
     > log/${path}/train_${model_name}.log &
 # -share_embeddings for share_vocab
 

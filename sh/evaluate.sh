@@ -1,7 +1,7 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data1/xiuwen/twitter/match-using-words/tweet-conv-8days-no-time-usingwords/news/
-path=match-using-words
+data_prefix=/data1/xiuwen/twitter/tweet2018/match-using-entity/considertime
+path=match-using-entity/considertime
 
 if [[ $1 =~ 'Twitter' ]]
 then

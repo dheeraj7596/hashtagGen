@@ -1,7 +1,7 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data1/xiuwen/twitter/match-using-entity/modified-bm25
-path=match-using-entity/modifiedbm25
+data_prefix=/data1/xiuwen/twitter/tweet2018/match-using-entity/considertime
+path=match-using-entity/considertime
 if [[ $1 =~ 'Twitter' ]]
 then
     dataset=${tw_dataset}
@@ -23,7 +23,7 @@ python -u ../translate.py \
     -max_length 10 \
     -n_best 20 \
     -batch_size 64 \
-    -gpu 1 > log/${path}/translate_${1%.pt}.log  \
+    -gpu 2 > log/${path}/translate_${1%.pt}.log  \
 && python -u ../evaluate.py \
     -tgt ${data_prefix}/test_tag.txt \
     -pred prediction/${1/%pt/txt}  \

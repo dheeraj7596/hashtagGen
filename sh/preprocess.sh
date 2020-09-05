@@ -1,5 +1,5 @@
 data_tag='Twitter'
-dataset=/data1/xiuwen/twitter/match-using-entity/modified-bm25/
+dataset=/data1/xiuwen/twitter/tweet2018/match-using-entity/considertime/
 
 if [[ $data_tag =~ 'Twitter' ]]
 then
@@ -38,7 +38,7 @@ python -u ../preprocess.py \
     -valid_src $dataset/valid_repeat_post.txt \
     -valid_conv $dataset/valid_repeat_conv.txt \
     -valid_tgt $dataset/valid_repeat_tag.txt \
-    -save_data ../processed_data/match-using-entity/modifiedbm25/${full_data_tag}  \
+    -save_data ../processed_data/match-using-entity/considertime/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \
     -conversation_seq_length ${cl} \
