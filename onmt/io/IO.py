@@ -339,7 +339,7 @@ def build_vocab(train_dataset_files, fields, data_type, share_vocab,
     for path in train_dataset_files:
         dataset = torch.load(path)
         if logger:
-            logger.info(" * reloading %s." % path)
+            logger.info(" * reloading %s with size %d" % (path, len(dataset.examples)))
         for ex in dataset.examples:
             for k in fields:
                 val = getattr(ex, k, None)
