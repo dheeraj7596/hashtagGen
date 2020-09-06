@@ -219,7 +219,7 @@ def build_dataset(fields, data_type, src_path, tgt_path, src_dir=None,
     return dataset
 
 
-def build_my_dataset(fields, data_type, src_path, conversation_path, tgt_path, src_dir=None,
+def build_my_dataset(fields, data_type, src_path, conversation_path, tgt_path, score_path, src_dir=None,
                   src_seq_length=0, conversation_seq_length=0, tgt_seq_length=0,
                   src_seq_length_trunc=0, conversation_seq_length_trunc=0, tgt_seq_length_trunc=0,
                   dynamic_dict=True, sample_rate=0,
@@ -235,7 +235,7 @@ def build_my_dataset(fields, data_type, src_path, conversation_path, tgt_path, s
 
     conversation_examples_iter, num_conversation_feats = \
         TextDataset.make_text_examples_nfeats_tpl(
-            conversation_path, conversation_seq_length_trunc, "conversation")
+            conversation_path, conversation_seq_length_trunc, "conversation", score_path=score_path)
 
     # For all data types, the tgt side corpus is in form of text.
     tgt_examples_iter, num_tgt_feats = \

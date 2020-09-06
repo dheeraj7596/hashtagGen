@@ -5,7 +5,7 @@ import pickle
 import ekphrasis
 import numpy as np
 from ekphrasis.classes.segmenter import Segmenter
-from process_tweets import tokenizer
+from process_tweets import tokenizer, ner
 
 stop_words = set()
 stop_words.add("rt")
@@ -81,7 +81,7 @@ def handle_tweets(df_tweets):
         temp = get_inline_notinline_htags(list_tweet)
         if temp is not None:
             tweet_for_ner, htags = temp
-            dataset.append([ tweet, tweet_for_ner, tokenizer(tweet_for_ner), ";".join(htags), row['created_at']])
+            dataset.append([ tweet, ner(tweet_for_ner), tokenizer(tweet_for_ner), ";".join(htags), row['created_at']])
 
     #   f.write(tweet)
     #  f.write("\n")

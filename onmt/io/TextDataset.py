@@ -133,7 +133,7 @@ class TextDataset(ONMTDatasetBase):
         return scores
 
     @staticmethod
-    def make_text_examples_nfeats_tpl(path, truncate, side):
+    def make_text_examples_nfeats_tpl(path, truncate, side, score_path=None):
         """
         Args:
             path (str): location of a src or tgt file.
@@ -151,7 +151,7 @@ class TextDataset(ONMTDatasetBase):
         # All examples have same number of features, so we peek first one
         # to get the num_feats.
         examples_nfeats_iter = \
-            TextDataset.read_text_file(path, truncate, side)
+            TextDataset.read_text_file(path, truncate, side, score=score_path)
 
         first_ex = next(examples_nfeats_iter)
         num_feats = first_ex[1]
@@ -163,7 +163,7 @@ class TextDataset(ONMTDatasetBase):
         return (examples_iter, num_feats)
 
     @staticmethod
-    def read_text_file(path, truncate, side):
+    def read_text_file(path, truncate, side, score=None):
         """
         Args:
             path (str): location of a src or tgt file.
@@ -173,23 +173,38 @@ class TextDataset(ONMTDatasetBase):
         Yields:
             (word, features, nfeat) triples for each line.
         """
-        with codecs.open(path, "r", "utf-8") as corpus_file:
-            for i, line in enumerate(corpus_file):
-                if side == "conversation":
-                    splitted = line.strip().split("|||||")
-                    line = splitted[0].split()
-                    bm25 = float(splitted[1])
-                else:
-                    line = line.strip().split()
+
+        corpus_file = codecs.open(path, "r", "utf-8")
+        if score:
+            score_file = codecs.open(score, "r", "utf-8")
+            for i, data in enumerate(zip(corpus_file, score_file)):
+                line = data[0]
+                score = data[1]
+                line = line.rstrip("\n").split(" ")
+                splitted = score.strip().split(",")
+                bm25 = [float(i) for i in splitted]
                 if truncate:
                     line = line[:truncate]
-
+                    bm25 = bm25[:truncate]
+                # words, feats, n_feats = TextDataset.extract_text_features(line)
+                assert len(line) == len(bm25)
                 words, feats, n_feats = \
                     TextDataset.extract_text_features(line)
-                if side == "conversation":
-                    example_dict = {side: words, "indices": i, "bm25": bm25}
-                else:
-                    example_dict = {side: words, "indices": i}
+                example_dict = {side: words, "indices": i, "bm25": torch.FloatTensor(bm25)}
+                if feats:
+                    prefix = side + "_feat_"
+                    example_dict.update((prefix + str(j), f)
+                                        for j, f in enumerate(feats))
+                yield example_dict, n_feats
+
+        else:
+            for i, line in enumerate(corpus_file):
+                line = line.rstrip("\n").split(" ")
+                if truncate:
+                    line = line[:truncate]
+                words, feats, n_feats = \
+                    TextDataset.extract_text_features(line)
+                example_dict = {side: words, "indices": i}
                 if feats:
                     prefix = side + "_feat_"
                     example_dict.update((prefix + str(j), f)
@@ -241,6 +256,14 @@ class TextDataset(ONMTDatasetBase):
                     alignment[j, i, t] = 1
             return alignment
 
+        def create_score(data, vocab, is_train):
+            size = max([t.size(0) for t in data])
+            new_score = torch.zeros(len(data), size)
+            for i, score in enumerate(data):
+                for j, t in enumerate(score):
+                    new_score[i, j] = t
+            return new_score
+
         fields["src_map"] = torchtext.data.Field(
             use_vocab=False, tensor_type=torch.FloatTensor,
             postprocessing=make_src, sequential=False)
@@ -262,7 +285,7 @@ class TextDataset(ONMTDatasetBase):
 
         fields["bm25"] = torchtext.data.Field(
             use_vocab=False, tensor_type=torch.FloatTensor,
-            sequential=False)
+            postprocessing=create_score, sequential=False)
 
         return fields
 
@@ -297,8 +320,9 @@ class TextDataset(ONMTDatasetBase):
                                                   specials=[UNK_WORD, PAD_WORD])
                 self.src_vocabs.append(src_vocab)
             except:
-                print(src)
-                print(conversation)
+                src_vocab = torchtext.vocab.Vocab(Counter(src),
+                                                  specials=[UNK_WORD, PAD_WORD])
+                self.src_vocabs.append(src_vocab)
             # Mapping source tokens to indices in the dynamic dict.
             src_map = torch.LongTensor([src_vocab.stoi[w] for w in src])
             example["src_map"] = src_map
@@ -427,9 +451,17 @@ class ShardedTextCorpusIterator(object):
 
         return self.n_feats
 
+    # def pad_bm25(self, bm25):
+    #     max_len = max(len(x) for x in bm25)
+    #     padded = []
+    #     for i in bm25:
+    #         temp = i + [0] * (max_len - len(i))
+    #         padded.append(temp)
+    #     return padded
+
+
     def _example_dict_iter(self, line, index, score=None):
         line = line.rstrip("\n").split(" ")
-
         if score:
             splitted = score.strip().split(",")
             bm25 = [float(i) for i in splitted]
@@ -440,6 +472,7 @@ class ShardedTextCorpusIterator(object):
         # words, feats, n_feats = TextDataset.extract_text_features(line)
         if score:
             assert len(line) == len(bm25)
+            # bm25 = self.pad_bm25(bm25)
             example_dict = {self.side: line, "indices": index, "bm25": torch.FloatTensor(bm25)}
         else:
             example_dict = {self.side: line, "indices": index}

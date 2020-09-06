@@ -17,7 +17,7 @@ import re
 
 def main(opt):
     translator = make_translator(opt, report_score=True)
-    translator.translate(opt.src_dir, opt.src, opt.conversation, opt.tgt,
+    translator.translate(opt.src_dir, opt.src, opt.conversation, opt.tgt, opt.score,
                          opt.batch_size, opt.attn_debug)
 
 

@@ -131,13 +131,14 @@ class Translator(object):
                 "scores": [],
                 "log_probs": []}
 
-    def translate(self, src_dir, src_path, conversation_path, tgt_path,
+    def translate(self, src_dir, src_path, conversation_path, tgt_path, score_path,
                   batch_size, attn_debug=False):
         data = onmt.io.build_my_dataset(self.fields,
                                      self.data_type,
                                      src_path,
                                      conversation_path,
                                      tgt_path,
+                                     score_path,
                                      src_dir=src_dir,
                                      conversation_seq_length_trunc=100,  # yue
                                      src_seq_length_trunc=50,  #yue
@@ -440,12 +441,12 @@ class Translator(object):
         src = onmt.io.make_features(batch, 'src', data_type)
         conversation = onmt.io.make_features(batch, 'conversation', data_type)
         tgt_in = onmt.io.make_features(batch, 'tgt')[:-1]
-
+        bm25 = batch.bm25
         #  (1) run the encoder on the src
         if self.model.__class__.__name__ == "NMTModel":
             enc_states, memory_bank = self.model.encoder(src, src_lengths)
         else:
-            enc_states, memory_bank = self.model.encoder(src, conversation,
+            enc_states, memory_bank = self.model.encoder(src, conversation, bm25,
                                                         (src_lengths, conversation_lengths))
 
         dec_states = \
