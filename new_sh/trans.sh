@@ -1,6 +1,6 @@
 tw_dataset=Twitter
 wb_dataset=Weibo
-data_prefix=/data1/xiuwen/twitter/tweet2018/match-using-entity/bm25
+data_prefix=/data1/xiuwen/twitter/tweet2020/match-using-entity/bm25
 
 if [[ $1 =~ 'Twitter' ]]
 then
