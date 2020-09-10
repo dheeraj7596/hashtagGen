@@ -1,5 +1,5 @@
 data_tag='Twitter'
-dataset=/data1/xiuwen/twitter/match-using-words/tweet-conv-8days-no-time-usingwords/news/
+dataset=/data1/xiuwen/twitter/tweet2018/match-using-entity/bm25
 
 if [[ $data_tag =~ 'Twitter' ]]
 then
@@ -34,11 +34,13 @@ python -u ../preprocess.py \
     -max_shard_size 52428800 \
     -train_src $dataset/train_repeat_post.txt \
     -train_conv $dataset/train_repeat_conv.txt \
+    -train_score $dataset/train_repeat_score.txt \
     -train_tgt $dataset/train_repeat_tag.txt \
     -valid_src $dataset/valid_repeat_post.txt \
     -valid_conv $dataset/valid_repeat_conv.txt \
+    -valid_score $dataset/valid_repeat_score.txt \
     -valid_tgt $dataset/valid_repeat_tag.txt \
-    -save_data ../processed_data/match-using-word/news/${full_data_tag}  \
+    -save_data ../processed_data/incorpscore/${full_data_tag}  \
     -src_vocab_size ${vs} \
     -src_seq_length ${sl} \
     -conversation_seq_length ${cl} \

@@ -113,6 +113,7 @@ def build_save_text_dataset_in_shards(src_corpus, conversation_corpus, tgt_corpu
         if logger:
             logger.info(" * saving %s data shard to %s."
                         % (corpus_type, pt_file))
+            logger.info("* saving d% data" %(len(dataset.examples)))
         torch.save(dataset, pt_file)
 
         ret_list.append(pt_file)

@@ -1,9 +1,9 @@
 dataset=Twitter
-model=PostEncoder  # PostEncoder | BiAttEncoder
+model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
-tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_modifiedbm25_notshare
-is_copyrnn=true
-emb_size=300
+tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_notshare
+is_copyrnn=false
+emb_size=200
 seed=23
 special='bm25'
 rnn=300
@@ -44,9 +44,9 @@ python -u ../train.py \
     -rnn_size ${rnn} \
     -rnn_type GRU \
     -global_attention general ${copy_cmd} \
-    -save_model saved_models/modifiedbm25/${model_name} \
+    -save_model saved_models/incorpscore/${model_name} \
     -seed ${seed} \
-    -data ../processed_data/${data_tag} \
+    -data ../processed_data/incorpscore/${data_tag} \
     -batch_size 64 \
     -epochs 15 \
     -optim adam \
@@ -55,5 +55,5 @@ python -u ../train.py \
     -learning_rate ${lr} \
     -learning_rate_decay 0.5 \
     -gpuid 6 \
-    > log/train_${model_name}.log &
+    > log/incorpscore/train_${model_name}.log &
 # -share_embeddings for share_vocab
