@@ -2,13 +2,13 @@ dataset=Twitter
 model=BiAttEncoder  # PostEncoder | BiAttEncoder
 wb_data_tag=Weibo_src50_conv100_tgt10_v50000
 tw_data_tag=Twitter_src35_conv100_tgt10_vs30000_nonshare
-path=match-using-entity/considertime/
+path=match-using-entity/modifiedbm25/
 is_copyrnn=false
 emb_size=300
 seed=23
 special='raw_news'
-rnn=300
-lr=0.001
+rnn=400
+lr=0.0008
 
 if [[ $dataset =~ 'Weibo' ]]
 then
